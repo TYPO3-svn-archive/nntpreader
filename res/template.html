@@ -1,0 +1,185 @@
+<!-- ###FORUM### -->
+<p class="nntpreader-breadcrumb" style="position:relative;">###BREADCRUMB###<span style="position:absolute;right:2px;">all Groups ###GRSS###</span></p>
+<table class="tx-nntpreader-table" width="100%">
+	<tr>
+		<th class="tx-nntpreader-th" colspan="4">   Netfielders</th>
+	</tr>
+	<tr>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Newsgroup</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Threads</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Posts</td>
+		<td class="tx-nntpreader-td tx-nntpreader-th2">RSS</td>
+	</tr>
+	<!-- ###ROW### -->
+	<tr>
+        <td class="tx-nntpreader-td">###NG###</td>
+        <td class="tx-nntpreader-td">###THREADS###</td>
+        <td class="tx-nntpreader-td">###POSTS###</td>
+		<td class="tx-nntpreader-td">###RSS###</td>
+	</tr>
+	<!-- ###ROW### -->
+	<tr>
+		<th class="tx-nntpreader-th-footer" colspan="4">nntpreader &copy; by Steffen Kamper</th>
+	</tr>
+</table>
+<!-- ###FORUM### -->
+
+
+<!-- ###NEWSGROUP### -->
+<p class="nntpreader-breadcrumb" >###BREADCRUMB###</p>
+<table class="tx-nntpreader-table" width="100%">
+	<tr>
+		<th class="tx-nntpreader-th" colspan="4">Netfielders: ###GROUP###</th>
+	</tr>
+	<tr>
+		<td class="tx-nntpreader-td-pagebrowser" colspan="4">###PAGEBROWSER###</td>
+	</tr>
+	<tr>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Date</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Poster</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Subject</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Answers</td>
+	</tr>
+	<!-- ###ROW### -->
+	<tr>
+        <td class="tx-nntpreader-td">###DATE###</td>
+        <td class="tx-nntpreader-td">###NAME###</td>
+        <td class="tx-nntpreader-td">###SUBJECT###</td>
+        <td class="tx-nntpreader-td">###THREADS###</td>
+	</tr>
+	<!-- ###ROW### -->
+	<tr>
+		<th class="tx-nntpreader-th-footer" colspan="4">nntpreader &copy; by Steffen Kamper</th>
+	</tr>
+</table>
+<!-- ###NEWSGROUP### -->
+
+
+<!-- ###THREAD### -->
+<p class="nntpreader-breadcrumb" >###BREADCRUMB###</p>
+<div class="msgtree">###TREE###</div>
+<div class="msgheader">
+	<h3>###DATE### ###FROM### &lt;###FROMEMAIL###&gt;</h3>
+	<pre>###HEADER###</pre>
+	<!-- ###FILES### --><div class="msg-attachments">###ATTACHMENTS###</div><!-- ###FILES### -->
+</div>
+<div class="msgbody">
+	<h4>###SUBJECT###</h4>
+	<pre>###BODY###</pre>
+</div>
+<!-- ###THREAD### -->
+
+
+
+<!-- ###SEARCH### -->
+<form action="" method="post">
+<p style="display:none;">
+<input type="hidden" name="no_cache" value="1" />
+###HIDDEN###
+</p>
+<p>
+<label for="sword">Search for</label>
+<input type="text" id="sword" name="tx_nntpreader_pi1[sword]" value="###VALUE###"size="80" />
+</p>
+
+<p>
+<label for="boolean">Search mode</label>
+<select name="tx_nntpreader_pi1[boolean]" size="1">
+<option value="0">normal</option>
+<option value="1" ###B_SEL###>boolean</option>
+</select>
+<label for="newsgroup">Search in Newsgroup</label>
+<select name="tx_nntpreader_pi1[newsgroup]" id="newsgroup" size="1">
+<option value="">all</option>
+###NGS###
+</select>
+</p>
+<p>
+<input type="submit" name="tx_nntpreader_pi1[submit]" value="search" />
+</p>
+</form>
+<!-- ###SEARCH### -->
+
+
+
+<!-- ###SEARCHRESULTS### -->
+
+<table class="tx-nntpreader-table" width="100%">
+	<tr>
+		<th class="tx-nntpreader-th" colspan="5">SEARCHRESULTS (###COUNT###)</th>
+	</tr>
+	<tr>
+		<td class="tx-nntpreader-td-pagebrowser" colspan="5">###PAGEBROWSER###</td>
+	</tr>
+	<tr>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Date</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Newsgroup</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Poster</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Subject</td>
+        <td class="tx-nntpreader-td tx-nntpreader-th2">Score</td>
+	</tr>
+	<!-- ###ROW### -->
+	<tr style="background:#eee;">
+        <td class="tx-nntpreader-td">###DATE###</td>
+        <td class="tx-nntpreader-td">###NEWSGROUP###</td>
+        <td class="tx-nntpreader-td">###NAME###</td>
+        <td class="tx-nntpreader-td">###SUBJECT###</td>
+        <td class="tx-nntpreader-td">###RELEVANCE###</td>
+	</tr>
+	<tr>
+		<td class="tx-nntpreader-td searchtext" colspan="5">###TEXT###</td>	
+	</tr>
+	<!-- ###ROW### -->
+	<tr>
+		<th class="tx-nntpreader-th-footer" colspan="5">nntpreader &copy; by Steffen Kamper</th>
+	</tr>
+</table>
+<!-- ###SEARCHRESULTS### -->
+
+<!-- ###POSTFORM### -->
+<p>###SPECIAL###</p>
+<form action="###ACTION###" method="post" enctype="multipart/form-data">
+<p style="display:none;">###HIDDEN###</p>
+<fieldset>
+<legend>###LEGEND###</legend>
+<p>
+    <label for="tx_nntpreader_subject">Subject</label>
+    <input type="text" id="tx_nntpreader_subject" name="tx_nntpreader_pi1[subject]" size="60" max="250" value="###SUBJECT###" ###DISABLE### />
+</p>
+<p>
+	<label for="tx_nntpreader_posting">Message</label>
+	<textarea id="tx_nntpreader_posting" name="tx_nntpreader_pi1[posting]" rows="10" cols="60" class="tarea">###POSTING###</textarea>
+</p>
+<p>
+<input type="submit" name="tx_nntpreader_pi1[submit]" value="###SUBMIT###" />
+</p>
+</fieldset>
+</form>
+<!-- ###POSTFORM### -->
+
+
+<!-- ###RSSFEED### -->
+<rss version="2.0">
+	<channel>
+		<title>###SITE_TITLE###</title>
+		<link>###SITE_LINK###</link>
+		<description>###SITE_DESCRIPTION###</description>
+		
+		<generator>TYPO3 - get.content.right</generator>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		###NEWS_COPYRIGHT###
+		###NEWS_WEBMASTER###
+		###NEWS_LASTBUILD###
+		<!-- ###CONTENT### begin -->
+		<item>
+			<title>###NEWS_TITLE###</title>
+			<link>###NEWS_LINK###</link>
+			<description>###NEWS_CONTENT###></description>
+			<category>###NEWS_CATEGORY###</category>
+			<author>###NEWS_AUTHOR###</author>
+			<pubDate>###NEWS_DATE###</pubDate>
+		</item>
+		<!-- ###CONTENT### end -->
+	</channel>
+</rss>
+<!-- ###RSSFEED### -->

@@ -1,0 +1,339 @@
+#! /usr/bin/php -q
+<?php
+exit; 
+//  /var/www/web23/html/typo3conf/ext/nntpreader/cli/nntpreader.phpsh -r >> /var/www/web23/html/fileadmin/cron.log
+// *****************************************
+// Standard initialization of a CLI module:
+// *****************************************
+
+	// Defining circumstances for CLI mode:
+define('TYPO3_cliMode', TRUE);
+
+	// Defining PATH_thisScript here: Must be the ABSOLUTE path of this script in the right context:
+	// This will work as long as the script is called by it's absolute path!
+define('PATH_thisScript',$_ENV['_']?$_ENV['_']:$_SERVER['_']);
+
+	// Include configuration file:
+require(dirname(PATH_thisScript).'/conf.php');
+
+	// Include init file:
+require(dirname(PATH_thisScript).'/'.$BACK_PATH.'init.php');
+
+
+
+# HERE you run your application!
+require_once(t3lib_extMgm::extPath('nntpreader').'nntp/nntp.php');
+require_once(t3lib_extMgm::extPath('nntpreader').'nntp/db.php');
+	
+
+if (in_array('-h',$_SERVER["argv"]))    {
+		echo "
+	Options:
+	-r = repair references
+	-f = fetch newsgroups
+	-u = update all groups
+	-h = This help screen.\n";
+		exit;
+}
+
+$ref = in_array('-r',$_SERVER["argv"]);
+$fetch = in_array('-f',$_SERVER["argv"]);
+$upd = in_array('-u',$_SERVER["argv"]);
+
+
+if($upd) {
+	echo updateGroups();
+	exit;
+}
+
+if($ref) {
+	echo repairReferences();
+	exit;
+}
+
+if($fetch) {
+	
+	echo fetchMessages();
+	exit;
+}
+
+function repairReferences($count=100) {
+		
+	$r=array();
+	$i=0;$c=0;$good=0;$bad=0;
+	$time_start = microtime(true);
+	$date = date('Y-m-d H:i').'   ';
+	
+	$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery(
+		'msgreference',
+		'tx_nntpreader_messages',
+		'hidden=0 and deleted=0 and msgreference!="" and parentid=0',
+		'','crdate asc',$count);
+	
+	while($row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		$resU1=$GLOBALS['TYPO3_DB']->exec_SELECTquery('uid','tx_nntpreader_messages','msgid="'.$row['msgreference'].'"');
+		if($GLOBALS['TYPO3_DB']->sql_num_rows($resU1)>0) {
+			$row1=$GLOBALS['TYPO3_DB']->sql_fetch_row($resU1);
+			$id=intval($row1[0]);
+			$res1=$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nntpreader_messages','uid="'.$id.'"',array('hasChild'=>1));
+			$res2=$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nntpreader_messages','msgreference="'.$row['msgreference'].'"',array('parentid'=>$id));
+			$good++;
+		} else {
+			$res1=$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nntpreader_messages','msgreference="'.$row['msgreference'].'"',array('parentid'=>-1));
+			$bad++;
+		}
+	}
+	
+	$time_end = microtime(true);
+	$time = round($time_end - $time_start,2);
+	
+	$s.= $date.'Updated '.$good.' references, '.$bad.' references lost ('.$time.' sec.)'."\n";
+	
+	return $s;
+}
+
+function updateGroups() {
+	$time_start = microtime(true);
+	$date = date('Y-m-d H:i').'   ';
+	
+	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+		'*',
+		'tx_nntpreader_groups',
+		'deleted = 0 AND
+		 hidden = 0 AND
+		 pull=1',
+		'',
+		''   
+	);
+	while($row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+		$resU=$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nntpreader_groups','uid='.$row['uid'],array(
+			'tstamp' => time(),
+			'messages' => messageCount($row['uid']),
+			'threads' => threadCount($row['uid'])
+		));
+	}
+	$time_end = microtime(true);
+	$time = round($time_end - $time_start,2);
+	
+	return $date.'Updated all Groups ('.$time.' sec.)'."\n";
+}
+
+function fetchMessages() {
+	
+	$total_time_start = microtime(true);
+	//server
+	//$GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_nntpreader_server','uid=1');
+	//$server=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+	$server = array(
+		'name' => 'Netfielders',
+		'address' => 'news.netfielders.de',
+		'port' => '119'
+	);
+	
+	$nntp = new nntpreader_nntp($server,'');
+	$db = new nntpreader_db(NULL);
+	$nntp->fileDir = '/var/www/web23/html/uploads/tx_nntpreader/';
+	$db->pid = 4;
+	
+	//return 'ok';
+	//exit;
+	
+		
+	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'*',
+			'tx_nntpreader_groups',
+			'deleted = 0 AND
+			 hidden = 0 AND
+			 pull=1',
+			'',
+			''   
+		);
+		while($row=$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$groups[]=$row;
+		}
+		
+		$pages=getNGPages();
+		$pagesToClear = array();
+		
+		$date = date('Y-m-d H:i').'   ';
+		$content.=$date.'start of news fetching'."\n";
+		$total=0;
+		foreach($groups as $g) {
+			if($nntp->connect($g['nntp_name'])) {
+				$time_start = microtime(true);
+				$date = date('Y-m-d H:i').'   ';
+		
+				$start = $g['last_number'];
+				$lastNumber=$lastUID=0;
+				$max = $nntp->messageCount($g['nntp_name']);
+				$fetched = 0;
+				for($i=$start;$i<$start+5;$i++) {
+					if($i>$max) break;
+					$msg = $nntp->getMessage($g,$i);
+					if(!$msg) break;
+					$db->saveMessage($msg,$g,4);
+					$fetched++;
+					$lastNumber=$msg->number>0?$msg->number:$lastNumber;
+					$lastUID=$msg->uid>0?$msg->uid:$lastUID;
+				}
+				
+				if($fetched > 0) {
+					//update group
+					$resU=$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_nntpreader_groups','uid='.$g['uid'],array(
+						'tstamp' => time(),
+						'messages' => $max,
+						'threads' => threadCount($g['uid']),
+						'last_uid' => $lastUID,
+						'last_number' => $lastNumber,
+					));
+					//add page to clear cache
+					$pagesToClear[]=$pages[$g['uid']];
+				}
+				$total +=$fetched;
+				$time_end = microtime(true);
+				$time = round($time_end - $time_start,2);
+				
+				if($fetched>0) $content.=$date.'fetched '.$fetched.' messages in group '.$g['nntp_name'].' ('.$time.' sec.)'."\n";
+			}
+		}
+		if($total>0) {
+			$content.= repairReferences($total);
+			clearSpecificCache($pagesToClear);
+			$content .= date('Y-m-d H:i').'   Cleared cache of pages '.implode(',',$pagesToClear)."\n";
+		}
+		$time_end = microtime(true);
+		$time = round($time_end - $total_time_start,2);
+		$date = date('Y-m-d H:i').'   ';
+		$content.=$date.'end of news fetching: '.($total>0 ? $total.' messages in '.$time.' sec.' : 'no new messages found')."\n";
+		return $content;
+}
+
+function threadCount($groupUID) {
+	$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery('count(*)','tx_nntpreader_messages','hidden=0 and deleted=0 and newsgroup='.$groupUID.' and msgreference=""');
+	$row=$GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+	return $row[0];
+}
+function messageCount($groupUID) {
+	$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery('count(*)','tx_nntpreader_messages','hidden=0 and deleted=0 and newsgroup='.$groupUID);
+	$row=$GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+	return $row[0];
+}
+
+	
+function clearSpecificCache($pid,$cHash=false) {
+	if(is_array($pid)) {
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pages', 'page_id IN ('.implode(',', $pid).')');
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pagesection', 'page_id IN ('.implode(',', $pid).')');
+	} else {
+		$addWhere = $cHash ? ' and cHash = "'.$cHash.'"' : '';
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pages', 'page_id = '.$pid.$addWhere);
+		$GLOBALS['TYPO3_DB']->exec_DELETEquery('cache_pagesection', 'page_id = '.$pid.$addWhere);
+	}
+}
+
+function getNGPages() {
+	return array(
+		0 => 8,
+		1 => 84,
+		2 => 17,
+		3 => 16,
+		4 => 85,
+		5 => 15,
+		6 => 94,
+		7 => 93,
+		8 => 92,
+		9 => 108,
+		10 => 91,
+		11 => 107,
+		12 => 14,
+		13 => 90,
+		14 => 89,
+		15 => 106,
+		16 => 105,
+		17 => 104,
+		18 => 102,
+		19 => 88,
+		20 => 87,
+		21 => 86,
+		22 => 100,
+		23 => 99,
+		24 => 103,
+		25 => 109,
+		26 => 98,
+		27 => 97,
+		28 => 96,
+		29 => 95,
+		30 => 101,
+		31 => 29,
+		32 => 30,
+		33 => 31,
+		34 => 32,
+		35 => 33,
+		36 => 34,
+		37 => 110,
+		38 => 36,
+		39 => 37,
+		40 => 38,
+		41 => 39,
+		42 => 40,
+		43 => 41,
+		44 => 42,
+		45 => 43,
+		46 => 44,
+		47 => 45,
+		48 => 46,
+		49 => 47,
+		50 => 48,
+		51 => 49,
+		52 => 50,
+		53 => 13,
+		54 => 51,
+		55 => 52,
+		56 => 53,
+		57 => 54,
+		58 => 55,
+		59 => 56,
+		60 => 57,
+		61 => 12,
+		62 => 58,
+		63 => 59,
+		64 => 60,
+		65 => 61,
+		66 => 62,
+		67 => 63,
+		68 => 64,
+		69 => 11,
+		70 => 65,
+		71 => 66,
+		72 => 67,
+		73 => 10,
+		74 => 68,
+		75 => 69,
+		76 => 70,
+		77 => 9,
+		78 => 71,
+		79 => 72,
+		80 => 73,
+		81 => 74,
+		82 => 75,
+		83 => 19,
+		84 => 76,
+		85 => 18,
+		86 => 77,
+		87 => 78,
+		88 => 79,
+		89 => 80,
+		90 => 81,
+		91 => 82,
+		92 => 83,
+		93 => 118,
+		94 => 119,
+		95 => 120,
+		96 => 121,
+		97 => 126,
+		98 => 125,
+		99 => 124,
+	);
+}
+	
+?>

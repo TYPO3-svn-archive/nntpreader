@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'skt_nntpreader'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tx_nntpreader_groups">NNTP Groups</label>
+			<label index="tx_nntpreader_groups.name">name</label>
+            <label index="tx_nntpreader_groups.nntp_name">nntp name</label>
+            <label index="tx_nntpreader_groups.category">Category</label>
+            <label index="tx_nntpreader_groups.category.I.0">General</label>
+            <label index="tx_nntpreader_groups.category.I.1">Teams</label>
+            <label index="tx_nntpreader_groups.category.I.2">Projects</label>
+            <label index="tx_nntpreader_groups.category.I.3">German Usergroups</label>
+			<label index="tx_nntpreader_groups.category.I.4">Int. Usergroups</label>
+			<label index="tx_nntpreader_groups.pull">pull</label>
+			<label index="tx_nntpreader_groups.pull_interval">pull interval</label>
+			<label index="tx_nntpreader_groups.server">server</label>
+            <label index="tx_nntpreader_groups.messages">messages</label>
+			<label index="tx_nntpreader_groups.threads">threads</label>
+            <label index="tx_nntpreader_groups.last_uid">last uid</label>
+            <label index="tx_nntpreader_groups.last_number">last message number</label>
+			<label index="tx_nntpreader_groups.new">new</label>
+			<label index="tx_nntpreader_server">NNTP Server</label>
+			<label index="tx_nntpreader_server.name">name</label>
+			<label index="tx_nntpreader_server.address">address</label>
+			<label index="tx_nntpreader_server.port">port</label>
+			<label index="tx_nntpreader_messages">NNTP Messages</label>
+            <label index="tx_nntpreader_messages.msguid">Message id</label>
+            <label index="tx_nntpreader_messages.msgnumber">Message number</label>
+			<label index="tx_nntpreader_messages.msgid">Message nntp id</label>
+			<label index="tx_nntpreader_messages.parentid">parentid</label>
+			<label index="tx_nntpreader_messages.msgroot">msgroot</label>
+			<label index="tx_nntpreader_messages.newsgroup">newsgroup</label>
+			<label index="tx_nntpreader_messages.emailfrom">emailfrom</label>
+			<label index="tx_nntpreader_messages.namefrom">namefrom</label>
+			<label index="tx_nntpreader_messages.emailreplyto">emailreplyto</label>
+			<label index="tx_nntpreader_messages.namereplyto">namereplyto</label>
+			<label index="tx_nntpreader_messages.subject">subject</label>
+			<label index="tx_nntpreader_messages.msgreferences">references</label>
+            <label index="tx_nntpreader_messages.type">message type</label>
+			<label index="tx_nntpreader_messages.files">attachments</label>
+			<label index="tx_nntpreader_messages.maildate">maildate</label>
+			<label index="tx_nntpreader_messages.mailsize">mailsize</label>
+			<label index="tx_nntpreader_messages.views">views</label>
+            <label index="tx_nntpreader_messages.answers">answers</label>
+            <label index="tx_nntpreader_messages.hasChild">has childs</label>
+			<label index="tx_nntpreader_messages.textuid">text record</label>
+			
+			<label index="tx_nntpreader_text">Text</label>
+			<label index="tx_nntpreader_text.body">Body</label>
+			<label index="tx_nntpreader_text.body_raw">Raw body</label>
+            <label index="tx_nntpreader_text.header">Header</label>
+			<label index="tx_nntpreader_text.parent">Parent record</label>
+			
+			<label index="tt_content.list_type_pi1">NNTP Reader</label>
+			<label index="tt_content.list_type_pi2">NNTP Admin</label>
+		</languageKey>
+	</data>
+</T3locallang>

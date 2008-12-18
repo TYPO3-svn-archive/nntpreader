@@ -1,0 +1,40 @@
+#setup
+plugin.tx_nntpreader_pi1 {
+
+	filePreview = TEXT
+  	filePreview.value = 
+  	filePreview.filelink {
+    	path = uploads/tx_nntpreader/
+    	icon = 1
+    	icon.wrap = |
+    	icon_link = 1
+    	icon_image_ext_list = png,gif,jpg
+    	size = 1
+    	size.noTrimWrap = | (| Bytes) |
+    	size.bytes = 1
+    	size.bytes.labels =   | K| M| G
+    	stdWrap.wrap = |<br />
+    	target = _blank
+  	}
+
+}
+
+
+
+xmlnntp = PAGE
+xmlnntp {
+  typeNum = 111
+  config.no_cache = 1
+  10 < plugin.tx_nntpreader_pi1
+  10.code >
+  10.code = rss
+  10.siteUrl = http://support.typo3.org/
+  10.body_stdWrap.crop = 150|...
+  
+  config {
+    disableAllHeaderCode = 1
+    additionalHeaders = Content-type:application/xml
+    xhtml_cleaning = 0
+    admPanel = 0
+  }
+}
